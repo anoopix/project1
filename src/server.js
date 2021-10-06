@@ -30,32 +30,32 @@ const handlePost = (request, response, parsedUrl) => {
 };
 
 const urlStruct = {
-    'GET': {
+    GET: {
         '/': htmlHandler.getIndex,
         '/style.css': htmlHandler.getCSS,
+        '/main.js': htmlHandler.getMainJS,
+        '/src/create.js': htmlHandler.getCreateJS,
         '/getUsers': jsonHandler.getUsers,
         notFound: jsonHandler.notFound,
     },
-    'HEAD': {
+    HEAD: {
         '/getUsers': jsonHandler.getUsersMeta,
-        notFound: jsonHandler.notFoundMeta
-    }
+        notFound: jsonHandler.notFoundMeta,
+    },
 };
 
 const onRequest = (request, response) => {
     const parsedUrl = url.parse(request.url);
 
-    // console.dir(parsedUrl.pathname);
-    // console.dir(request.method);
+    console.dir(parsedUrl.pathname);
+    //console.dir(request.method);
 
     if (request.method === 'POST') {
         handlePost(request, response, parsedUrl);
+    } else if (urlStruct[request.method][parsedUrl.pathname]) {
+        urlStruct[request.method][parsedUrl.pathname](request, response);
     } else {
-        if (urlStruct[request.method][parsedUrl.pathname]) {
-            urlStruct[request.method][parsedUrl.pathname](request, response);
-        } else {
-            urlStruct[request.method].notFound(request, response);
-        }
+        urlStruct[request.method].notFound(request, response);
     }
 };
 

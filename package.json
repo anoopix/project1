@@ -1,7 +1,7 @@
 {
-    "name": "http-api-assignment-ii",
+    "name": "project1",
     "version": "1.0.0",
-    "description": "assignment week 4",
+    "description": "Project 1 for IGME 430",
     "main": "server.js",
     "scripts": {
         "start": "node ./src/server.js",
@@ -10,17 +10,18 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/IGM-RichMedia-at-RIT/http-api-assignment-ii.git"
+        "url": "git+https://github.com/anoopix/project1.git"
     },
     "author": "Anoop Rajeevan",
     "license": "UNLICENSED",
     "bugs": {
-        "url": "https://github.com/IGM-RichMedia-at-RIT/http-api-assignment-ii/issues"
+        "url": "https://github.com/anoopix/project1/issues"
     },
-    "homepage": "https://github.com/IGM-RichMedia-at-RIT/http-api-assignment-ii#readme",
+    "homepage": "https://github.com/anoopix/project1#readme",
     "dependencies": {
         "eslint": "^7.32.0",
         "eslint-config-airbnb": "^18.2.1",
-        "eslint-plugin-import": "^2.24.2"
+        "eslint-plugin-import": "^2.24.2",
+        "webpack": "^5.57.1"
     }
 }

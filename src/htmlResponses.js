@@ -2,6 +2,8 @@ const fs = require('fs'); // pull in the file system module
 
 const index = fs.readFileSync(`${__dirname}/../client/client.html`);
 const css = fs.readFileSync(`${__dirname}/../client/style.css`);
+const mainJS = fs.readFileSync(`${__dirname}/../client/main.js`);
+const createJS = fs.readFileSync(`${__dirname}/../src/create.js`);
 
 const getIndex = (request, response) => {
     response.writeHead(200, { 'Content-Type': 'text/html' });
@@ -15,7 +17,21 @@ const getCSS = (request, response) => {
     response.end();
 };
 
+const getMainJS = (request, response) => {
+    response.writeHead(200, { 'Content-Type': 'text/javascript' });
+    response.write(mainJS);
+    response.end();
+};
+
+const getCreateJS = (request, response) => {
+    response.writeHead(200, { 'Content-Type': 'text/javascript' });
+    response.write(createJS);
+    response.end();
+};
+
 module.exports = {
     getIndex,
     getCSS,
+    getMainJS,
+    getCreateJS,
 };
