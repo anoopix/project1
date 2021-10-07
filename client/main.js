@@ -1,4 +1,13 @@
-import * as create from "/src/create.js";
+import * as create from "./create.js";
+import * as vote from "./vote.js";
+
+const userInput = document.querySelector('#userInput');
+
+let screen = 0;
+
+let createBtn;
+let voteBtn;
+let backBtn;
 
 const handleResponse = (xhr) => {
     const content = document.querySelector('#content');
@@ -36,9 +45,6 @@ const handleResponse = (xhr) => {
             content.innerHTML += `<p>Message: ${obj.message}</p>`;
         }
     }
-
-
-
 };
 
 const requestUpdate = (e, userForm) => {
@@ -81,6 +87,147 @@ const sendPost = (e, nameForm) => {
     return false;
 };
 
+// Creates the main screen
+// Two buttons - create poll button and vote poll button
+const openMainScreen = () => {
+    if (createBtn != null) {
+        return;
+    }
+
+    if (voteBtn != null) {
+        return;
+    }
+
+    // Create button
+    createBtn = document.createElement("button");
+    createBtn.id = "createBtn";
+    createBtn.innerHTML = "Create a new poll";
+    userInput.appendChild(createBtn);
+
+    // Vote button
+    voteBtn = document.createElement("button");
+    voteBtn.id = "voteBtn";
+    voteBtn.innerHTML = "Vote in an existing poll";
+    userInput.appendChild(voteBtn);
+
+    mainButtonFunc();
+};
+
+// Closes the main screen
+// Called when transitioning to either create screen or vote screen
+const closeMainScreen = () => {
+    if (createBtn == null) {
+        return;
+    }
+
+    if (voteBtn == null) {
+        return;
+    }
+
+    // Create button
+    userInput.removeChild(createBtn);
+    createBtn = null;
+
+    // Vote button
+    userInput.removeChild(voteBtn);
+    voteBtn = null;
+};
+
+// Creates back button
+// Called AFTER transitioning to create screen or vote screen
+const createBackButton = () => {
+    if (backBtn != null) {
+        return;
+    }
+
+    backBtn = document.createElement("button");
+    backBtn.id = "backBtn";
+    backBtn.innerHTML = "Back to Main Menu";
+    userInput.appendChild(backBtn);
+
+    backButtonFunc();
+};
+
+// Removes back button
+// Called BEFORE transitioning back to main menu
+const removeBackButton = () => {
+    if (backBtn == null) {
+        return;
+    }
+
+    userInput.removeChild(backBtn);
+    backBtn = null;
+};
+
+// Opens screen depending on the screen number set in param
+const openScreen = (scr) => {
+    switch (scr) {
+        case 0:
+            openMainScreen();
+            break;
+        case 1:
+            create.open();
+            createBackButton();
+            break;
+        case 2:
+            vote.open();
+            createBackButton();
+            break;
+    }
+};
+
+// Closes screen depending on the screen number set in param
+const closeScreen = (scr) => {
+    switch (scr) {
+        case 0:
+            closeMainScreen();
+            break;
+        case 1:
+            removeBackButton();
+            create.close();
+            break;
+        case 2:
+            removeBackButton();
+            vote.close();
+            break;
+    }
+};
+
+// Transitions to new screen
+const screenTransition = (newScr) => {
+    closeScreen(screen);
+    screen = newScr;
+    openScreen(screen);
+};
+
+// Adds functionality to main button
+const mainButtonFunc = () => {
+    if (createBtn == null) {
+        return;
+    }
+
+    if (voteBtn == null) {
+        return;
+    }
+
+    createBtn.onclick = function() {
+        screenTransition(1);
+    };
+    voteBtn.onclick = function() {
+        screenTransition(2);
+    };
+}
+
+// Adds functionality to back button
+const backButtonFunc = () => {
+    if (backBtn == null) {
+        return;
+    }
+
+    backBtn.onclick = function() {
+        screenTransition(0);
+    };
+}
 
 const init = () => {
     // const userForm = document.querySelector('#userForm');
@@ -92,7 +239,7 @@ const init = () => {
     // userForm.addEventListener('submit', getUsers);
     // nameForm.addEventListener('submit', addUser);
 
-    create.open();
+    openMainScreen();
 };
 
 window.onload = init;
