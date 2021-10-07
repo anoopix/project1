@@ -64,24 +64,32 @@ const requestUpdate = (e, userForm) => {
     return false;
 };
 
-const sendPost = (e, nameForm) => {
+const sendPost = (e, questionForm) => {
     e.preventDefault();
 
-    const nameAction = nameForm.getAttribute('action');
-    const nameMethod = nameForm.getAttribute('method');
+    const questionAction = questionForm.getAttribute('action');
+    const questionMethod = questionForm.getAttribute('method');
 
-    const nameField = nameForm.querySelector('#nameField');
-    const ageField = nameForm.querySelector('#ageField');
+    const questionField = questionForm.querySelector('#questionField');
+
+    // Getting all option elements inside 'questionForm'
+    const optionFields = questionForm.querySelectorAll('#optionField');
 
     const xhr = new XMLHttpRequest();
-    xhr.open(nameMethod, nameAction);
+    xhr.open(questionMethod, questionAction);
 
     xhr.setRequestHeader('Accept', 'application/json');
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
     xhr.onload = () => handleResponse(xhr);
 
-    const formData = `name=${nameField.value}&age=${ageField.value}`;
+    let formData = `question=${questionField.value}`;
+
+    // Adding each option to the end of 'formData' string
+    for (let i = 0; i < optionFields.length; i++) {
+        formData += `&option_${i}=${optionFields[i].value}`;
+    }
+
     xhr.send(formData);
 
     return false;
@@ -167,6 +175,7 @@ const openScreen = (scr) => {
             break;
         case 1:
             create.open();
+            createFunc();
             createBackButton();
             break;
         case 2:
@@ -227,6 +236,14 @@ const backButtonFunc = () => {
     backBtn.onclick = function() {
         screenTransition(0);
     };
+}
+
+const createFunc = () => {
+    const questionForm = document.querySelector('#questionForm');
+
+    const addPoll = (e) => sendPost(e, questionForm);
+
+    questionForm.addEventListener('submit', addPoll);
 }
 
 const init = () => {

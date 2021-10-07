@@ -1,14 +1,24 @@
 const userInput = document.querySelector('#userInput');
 
 let questionForm;
+
+let questionDiv;
+
 let questionLabel;
 let questionField;
+
+let optionsDiv;
 
 let optionLabels = [];
 let optionFields = [];
 
+let buttonsDiv;
+
 let addBtn;
 let removeBtn;
+
+let submitDiv;
+
 let submitBtn;
 
 //  <form id="nameForm" action="/addUser" method="post">
@@ -32,101 +42,148 @@ let submitBtn;
 
 function open() {
     if (questionForm != null ||
+        questionDiv != null ||
         questionLabel != null ||
         questionField != null ||
+        optionsDiv != null ||
         optionLabels.length > 0 ||
         optionFields.length > 0 ||
+        buttonsDiv != null ||
         addBtn != null ||
         removeBtn != null ||
+        submitDiv != null ||
         submitBtn != null) {
         return;
     }
 
     // Question form
     questionForm = document.createElement("form");
-    questionForm.action = "/addUser";
+    questionForm.id = "questionForm";
+    questionForm.action = "/addPoll";
     questionForm.method = "post";
     userInput.appendChild(questionForm);
+
+    // Question div
+    questionDiv = document.createElement("div");
+    questionDiv.id = "questionDiv";
+    questionForm.appendChild(questionDiv);
 
     // Question label
     questionLabel = document.createElement("label");
     questionLabel.htmlFor = "questionField";
     questionLabel.innerHTML = "Question: ";
-    questionForm.appendChild(questionLabel);
+    questionDiv.appendChild(questionLabel);
 
     // Question field
     questionField = document.createElement("input");
     questionField.id = "questionField";
     questionField.type = "text";
     questionField.name = "question";
-    questionForm.appendChild(questionField);
+    questionDiv.appendChild(questionField);
+
+    // Options div
+    optionsDiv = document.createElement("div");
+    optionsDiv.id = "optionsDiv";
+    questionForm.appendChild(optionsDiv);
 
     addOption();
     addOption();
-
-    console.log(userInput);
 }
 
 function addOption() {
-    // Option field
-    let optField = document.createElement("input");
-    optField.id = "optionField";
-    optField.type = "text";
-    optField.name = "option_" + (optionFields.length).toString();
+    if (optionFields.length < 10) {
+        // Single option div
+        let optDiv = document.createElement("div");
+        optDiv.id = "singleOptsDiv";
+        optionsDiv.appendChild(optDiv);
 
-    // Option label
-    let optLabel = document.createElement("label");
-    optLabel.htmlFor = "option_" + (optionFields.length).toString();
-    optLabel.innerHTML = "Option #" + (optionLabels.length).toString() + ": ";
+        // Option field
+        let optField = document.createElement("input");
+        optField.id = "optionField";
+        optField.type = "text";
+        optField.name = "option_" + (optionFields.length).toString();
 
-    questionForm.appendChild(optLabel);
-    questionForm.appendChild(optField);
+        // Option label
+        let optLabel = document.createElement("label");
+        optLabel.htmlFor = "option_" + (optionFields.length).toString();
+        optLabel.innerHTML = "Option #" + (optionLabels.length + 1).toString() + ": ";
 
-    optionLabels.push(optLabel);
-    optionFields.push(optField);
+        optDiv.appendChild(optLabel);
+        optDiv.appendChild(optField);
+
+        optionLabels.push(optLabel);
+        optionFields.push(optField);
+
+        optionsDiv.appendChild(document.createElement("br"));
+    }
 
     addBtns();
 }
 
 function removeOption() {
-    if (optionLabels.length == 2 || optionFields.length == 2) {
-        return;
+    if (optionFields.length > 2) {
+        let optDivs = optionsDiv.getElementsByTagName("div");
+
+        // Remove last index of option labels and fields
+        optDivs[optDivs.length - 1].removeChild(optionFields[optionFields.length - 1]);
+        optionFields[optionFields.length - 1] = null;
+        optionFields.pop();
+
+        optDivs[optDivs.length - 1].removeChild(optionLabels[optionLabels.length - 1]);
+        optionLabels[optionLabels.length - 1] = null;
+        optionLabels.pop();
+
+        optionsDiv.removeChild(optDivs[optDivs.length - 1]);
+
+        let brs = optionsDiv.getElementsByTagName('br');
+        optionsDiv.removeChild(brs[brs.length - 1]);
     }
 
-    // Remove last index of option labels and fields
-    questionForm.removeChild(optionFields[optionFields.length - 1]);
-    optionFields[optionFields.length - 1] = null;
-    optionFields.pop();
-
-    questionForm.removeChild(optionLabels[optionLabels.length - 1]);
-    optionLabels[optionLabels.length - 1] = null;
-    optionLabels.pop();
+    addBtns();
 }
 
 function addBtns() {
+
     // Removes 'Add option' button if already present
     if (addBtn != null) {
-        questionForm.removeChild(addBtn);
+        buttonsDiv.removeChild(addBtn);
         addBtn = null;
     }
 
     // Removes 'Remove option' button if already present
     if (removeBtn != null) {
-        questionForm.removeChild(removeBtn);
+        buttonsDiv.removeChild(removeBtn);
         removeBtn = null;
+    }
+
+    // Removed 'buttonsDiv' if already present
+    if (buttonsDiv != null) {
+        questionForm.removeChild(buttonsDiv);
+        buttonsDiv = null;
     }
 
     // Removes 'Submit' button if already present
     if (submitBtn != null) {
-        questionForm.removeChild(submitBtn);
+        submitDiv.removeChild(submitBtn);
         submitBtn = null;
     }
+
+    // Removes submitDiv is already present
+    if (submitDiv != null) {
+        questionForm.removeChild(submitDiv);
+        submitDiv = null;
+    }
+
+    // Creates buttonsDiv
+    buttonsDiv = document.createElement("div");
+    buttonsDiv.id = "createButtonsDiv";
+    questionForm.appendChild(buttonsDiv);
 
     // Creates 'Add option' button
     addBtn = document.createElement("button");
     addBtn.id = "addBtn";
     addBtn.innerHTML = "Add an option";
-    questionForm.appendChild(addBtn);
+    buttonsDiv.appendChild(addBtn);
     addBtn.onclick = function() {
         addOption();
     };
@@ -135,58 +192,84 @@ function addBtns() {
     removeBtn = document.createElement("button");
     removeBtn.id = "removeBtn";
     removeBtn.innerHTML = "Remove an option";
-    questionForm.appendChild(removeBtn);
+    buttonsDiv.appendChild(removeBtn);
     removeBtn.onclick = function() {
         removeOption();
     };
+
+    // Creates submitDiv
+    submitDiv = document.createElement("div");
+    submitDiv.id = "createSubmitDiv";
+    questionForm.appendChild(submitDiv);
 
     // Creates 'Submit' button
     submitBtn = document.createElement("input");
     submitBtn.id = "submitBtn";
     submitBtn.type = "submit";
-    submitBtn.value = "Add User";
-    submitBtn.innerHTML = "Submit poll";
-    questionForm.appendChild(submitBtn);
+    submitBtn.value = "Submit poll";
+    submitDiv.appendChild(submitBtn);
 }
 
 function close() {
     if (questionForm == null ||
+        questionDiv == null ||
         questionLabel == null ||
         questionField == null ||
-        optionLabels == null ||
-        optionFields == null ||
+        optionsDiv == null ||
+        optionLabels.length == 0 ||
+        optionFields.length == 0 ||
+        buttonsDiv == null ||
         addBtn == null ||
         removeBtn == null ||
+        submitDiv == null ||
         submitBtn == null) {
         return;
     }
 
-    questionForm.removeChild(submitBtn);
+    submitDiv.removeChild(submitBtn);
     submitBtn = null;
 
-    questionForm.removeChild(removeBtn);
+    questionForm.removeChild(submitDiv);
+    submitDiv = null;
+
+    buttonsDiv.removeChild(removeBtn);
     removeBtn = null;
 
-    questionForm.removeChild(addBtn);
+    buttonsDiv.removeChild(addBtn);
     addBtn = null;
 
-    for (let field of optionFields) {
-        questionForm.removeChild(field);
-        field = null;
+    questionForm.removeChild(buttonsDiv);
+    buttonsDiv = null;
+
+    let optDivs = optionsDiv.getElementsByTagName("div");
+
+    for (let i = 0; i < optionFields.length; i++) {
+        optDivs[i].removeChild(optionFields[i]);
+        optionFields[i] = null;
     }
     optionFields = [];
 
-    for (let label of optionLabels) {
-        questionForm.removeChild(label);
-        label = null;
+    for (let i = 0; i < optionLabels.length; i++) {
+        optDivs[i].removeChild(optionLabels[i]);
+        optionLabels[i] = null;
     }
     optionLabels = [];
 
-    questionForm.removeChild(questionField);
+    for (let i = 0; i < optDivs.length; i++) {
+        optionsDiv.removeChild(optDivs[i]);
+    }
+
+    questionForm.removeChild(optionsDiv);
+    optionsDiv = null;
+
+    questionDiv.removeChild(questionField);
     questionField = null;
 
-    questionForm.removeChild(questionLabel);
+    questionDiv.removeChild(questionLabel);
     questionLabel = null;
+
+    questionForm.removeChild(questionDiv);
+    questionDiv = null;
 
     userInput.removeChild(questionForm);
     questionForm = null;

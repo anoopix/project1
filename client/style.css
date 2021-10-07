@@ -24,3 +24,50 @@ body {
     font-size: 2em;
     text-align: center;
 }
+
+#questionDiv {
+    background-color: lightblue;
+    margin: auto;
+    width: 300px;
+    /* text-align: center; */
+}
+
+#optionsDiv {
+    background-color: lightgreen;
+    margin: auto;
+    width: 300px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding-top: 20px;
+    text-align: center;
+}
+
+#singleOptsDiv {
+    text-align: right;
+    margin: auto;
+    width: 265px;
+    background-color: rgb(89, 180, 89);
+}
+
+#createButtonsDiv {
+    background-color: lightyellow;
+    margin: auto;
+    width: 300px;
+    /* text-align: center; */
+}
+
+#createSubmitDiv {
+    background-color: lightsalmon;
+    margin: auto;
+    width: 300px;
+    /* text-align: center; */
+}
+
+#createButtonsDiv {
+    background-color: lightpink;
+    margin: auto;
+    width: 300px;
+    /* text-align: center; */
+}
+
+#backBtn {}
