@@ -35,24 +35,29 @@ const handleResponse = (xhr) => {
 
     if (xhr.response && xhr.getResponseHeader('Content-Type') === 'application/json') {
         const obj = JSON.parse(xhr.response);
-        console.dir(obj);
+        //console.dir(obj);
 
-        if (obj.users) {
-            const usersString = JSON.stringify(obj.users);
+        if (obj.polls) {
+            const pollsString = JSON.stringify(obj.polls);
 
-            content.innerHTML += `<p>${usersString}</p>`;
+            content.innerHTML += `<p>${pollsString}</p>`;
+
+            if (vote.getSelectList() != null) {
+                vote.setPolls(obj.polls);
+            }
         } else if (obj.message) {
             content.innerHTML += `<p>Message: ${obj.message}</p>`;
         }
     }
 };
 
-const requestUpdate = (e, userForm) => {
-    const url = userForm.querySelector('#urlField').value;
-    const method = userForm.querySelector('#methodSelect').value;
+const requestUpdate = () => {
+    //const url = userForm.querySelector('#urlField').value;
+    //const method = userForm.querySelector('#methodSelect').value;
 
     const xhr = new XMLHttpRequest();
-    xhr.open(method, url);
+    // xhr.open(method, url);
+    xhr.open('get', '/getPolls');
 
     xhr.setRequestHeader('Accept', 'application/json');
 
@@ -60,7 +65,7 @@ const requestUpdate = (e, userForm) => {
 
     xhr.send();
 
-    e.preventDefault();
+    //e.preventDefault();
     return false;
 };
 
@@ -180,6 +185,7 @@ const openScreen = (scr) => {
             break;
         case 2:
             vote.open();
+            voteFunc();
             createBackButton();
             break;
     }
@@ -225,7 +231,7 @@ const mainButtonFunc = () => {
     voteBtn.onclick = function() {
         screenTransition(2);
     };
-}
+};
 
 // Adds functionality to back button
 const backButtonFunc = () => {
@@ -236,15 +242,23 @@ const backButtonFunc = () => {
     backBtn.onclick = function() {
         screenTransition(0);
     };
-}
+};
 
 const createFunc = () => {
-    const questionForm = document.querySelector('#questionForm');
+    let questionForm = create.getForm();
 
     const addPoll = (e) => sendPost(e, questionForm);
 
     questionForm.addEventListener('submit', addPoll);
-}
+    questionForm.addEventListener('submit', function() {
+        create.restartScreen();
+    });
+};
+
+const voteFunc = () => {
+    let selectList = vote.getSelectList();
+    requestUpdate();
+};
 
 const init = () => {
     // const userForm = document.querySelector('#userForm');

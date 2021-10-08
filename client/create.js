@@ -1,5 +1,8 @@
 const userInput = document.querySelector('#userInput');
 
+let title;
+let instructions;
+
 let questionForm;
 
 let questionDiv;
@@ -18,7 +21,6 @@ let addBtn;
 let removeBtn;
 
 let submitDiv;
-
 let submitBtn;
 
 //  <form id="nameForm" action="/addUser" method="post">
@@ -41,7 +43,9 @@ let submitBtn;
 //  </form>
 
 function open() {
-    if (questionForm != null ||
+    if (title != null ||
+        instructions != null ||
+        questionForm != null ||
         questionDiv != null ||
         questionLabel != null ||
         questionField != null ||
@@ -55,6 +59,16 @@ function open() {
         submitBtn != null) {
         return;
     }
+
+    // Title
+    title = document.createElement("h2");
+    title.innerHTML = "Create a poll!";
+    userInput.appendChild(title);
+
+    // Instructions
+    instructions = document.createElement("h3");
+    instructions.innerHTML = "Type in a question, and its possible answers.";
+    userInput.appendChild(instructions);
 
     // Question form
     questionForm = document.createElement("form");
@@ -176,7 +190,7 @@ function addBtns() {
 
     // Creates buttonsDiv
     buttonsDiv = document.createElement("div");
-    buttonsDiv.id = "createButtonsDiv";
+    buttonsDiv.id = "buttonsDiv";
     questionForm.appendChild(buttonsDiv);
 
     // Creates 'Add option' button
@@ -199,7 +213,7 @@ function addBtns() {
 
     // Creates submitDiv
     submitDiv = document.createElement("div");
-    submitDiv.id = "createSubmitDiv";
+    submitDiv.id = "submitDiv";
     questionForm.appendChild(submitDiv);
 
     // Creates 'Submit' button
@@ -210,8 +224,11 @@ function addBtns() {
     submitDiv.appendChild(submitBtn);
 }
 
+// Closes screen
 function close() {
-    if (questionForm == null ||
+    if (title == null ||
+        instructions == null ||
+        questionForm == null ||
         questionDiv == null ||
         questionLabel == null ||
         questionField == null ||
@@ -273,6 +290,37 @@ function close() {
 
     userInput.removeChild(questionForm);
     questionForm = null;
+
+    userInput.removeChild(instructions);
+    instructions = null;
+
+    userInput.removeChild(title);
+    title = null;
 }
 
-export { open, close };
+function getForm() {
+    return questionForm;
+}
+
+// Resets create screen
+function restartScreen() {
+    if (questionField == null ||
+        optionLabels.length == 0 ||
+        optionFields.length == 0) {
+        return;
+    }
+
+    // Resets number of options to 2
+    while (optionFields.length > 2) {
+        removeOption();
+    }
+
+    // Clears all text inside textfields
+    questionField.value = "";
+
+    for (let field of optionFields) {
+        field.value = "";
+    }
+}
+
+export { open, close, getForm, restartScreen };
