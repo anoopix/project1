@@ -1,3 +1,5 @@
+import { createBackButton, sendVote } from "./main.js";
+
 const userInput = document.querySelector('#userInput');
 
 let title;
@@ -85,6 +87,18 @@ function addOptions(pollIndex) {
         optionButtons = [];
     }
 
+    // Removes 'Submit' button if already present
+    if (submitBtn != null) {
+        submitDiv.removeChild(submitBtn);
+        submitBtn = null;
+    }
+
+    // Removes submitDiv is already present
+    if (submitDiv != null) {
+        userInput.removeChild(submitDiv);
+        submitDiv = null;
+    }
+
     let options = polls[pollIndex].options;
     let optionKeys = Object.keys(options);
 
@@ -97,17 +111,29 @@ function addOptions(pollIndex) {
 
         optButton.addEventListener('click', function() {
             selectedOption = optionKeys[i];
-            console.log(selectedQuestion + ", " + selectedOption);
         });
 
         optionButtons.push(optButton);
     }
 
-    console.log(optionsDiv);
+    // Creates submitDiv
+    submitDiv = document.createElement("div");
+    submitDiv.id = "submitDiv";
+    userInput.appendChild(submitDiv);
 
-    // Submit div
+    // Creates 'Submit' button
+    submitBtn = document.createElement("input");
+    submitBtn.id = "submitBtn";
+    submitBtn.type = "submit";
+    submitBtn.value = "Submit poll";
+    submitDiv.appendChild(submitBtn);
 
-    // Submit button
+    submitBtn.addEventListener('click', sendVote);
+    submitBtn.addEventListener('click', function() {
+        submitBtn.disabled = true;
+    });
+
+    createBackButton();
 }
 
 // Closes the vote screen
@@ -117,9 +143,18 @@ function close() {
         selectDiv == null ||
         selectLabel == null ||
         selectList == null ||
-        optionsDiv == null ||
-        optionButtons.length == 0) {
+        optionsDiv == null) {
         return;
+    }
+
+    if (submitBtn != null) {
+        submitDiv.removeChild(submitBtn);
+        submitBtn = null;
+    }
+
+    if (submitDiv != null) {
+        userInput.removeChild(submitDiv);
+        submitDiv = null;
     }
 
     for (let i = 0; i < optionButtons.length; i++) {
@@ -169,6 +204,7 @@ function setPolls(_polls) {
 
     selectList.onchange = function() {
         if (selectList.selectedIndex < 2) {
+            clearOptions();
             return;
         }
 
@@ -180,4 +216,28 @@ function setPolls(_polls) {
     //console.log(selectList);
 }
 
-export { open, close, getSelectList, setPolls };
+function clearOptions() {
+    if (optionButtons.length > 0) {
+        for (let i = 0; i < optionButtons.length; i++) {
+            optionsDiv.removeChild(optionButtons[i]);
+            optionButtons[i] = null;
+        }
+        optionButtons = [];
+    }
+
+    if (submitBtn != null) {
+        submitDiv.removeChild(submitBtn);
+        submitBtn = null;
+    }
+
+    if (submitDiv != null) {
+        userInput.removeChild(submitDiv);
+        submitDiv = null;
+    }
+}
+
+function getVote() {
+    return [selectedQuestion, selectedOption];
+}
+
+export { open, close, getSelectList, setPolls, getVote };

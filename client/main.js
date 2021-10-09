@@ -72,8 +72,8 @@ const requestUpdate = () => {
 const sendPost = (e, questionForm) => {
     e.preventDefault();
 
-    const questionAction = questionForm.getAttribute('action');
-    const questionMethod = questionForm.getAttribute('method');
+    const action = questionForm.getAttribute('action');
+    const method = questionForm.getAttribute('method');
 
     const questionField = questionForm.querySelector('#questionField');
 
@@ -81,7 +81,7 @@ const sendPost = (e, questionForm) => {
     const optionFields = questionForm.querySelectorAll('#optionField');
 
     const xhr = new XMLHttpRequest();
-    xhr.open(questionMethod, questionAction);
+    xhr.open(method, action);
 
     xhr.setRequestHeader('Accept', 'application/json');
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -94,6 +94,28 @@ const sendPost = (e, questionForm) => {
     for (let i = 0; i < optionFields.length; i++) {
         formData += `&option_${i}=${optionFields[i].value}`;
     }
+
+    xhr.send(formData);
+
+    return false;
+};
+
+const sendVote = (e) => {
+    e.preventDefault();
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('post', '/addVote');
+
+    xhr.setRequestHeader('Accept', 'application/json');
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+    xhr.onload = () => handleResponse(xhr);
+
+    let gotVote = vote.getVote();
+
+    console.log(gotVote);
+
+    const formData = `questionIndex=${gotVote[0]}&optionIndex=${gotVote[1]}`;
 
     xhr.send(formData);
 
@@ -150,7 +172,7 @@ const closeMainScreen = () => {
 // Called AFTER transitioning to create screen or vote screen
 const createBackButton = () => {
     if (backBtn != null) {
-        return;
+        removeBackButton();
     }
 
     backBtn = document.createElement("button");
@@ -256,7 +278,6 @@ const createFunc = () => {
 };
 
 const voteFunc = () => {
-    let selectList = vote.getSelectList();
     requestUpdate();
 };
 
@@ -274,3 +295,5 @@ const init = () => {
 };
 
 window.onload = init;
+
+export { createBackButton, sendVote };

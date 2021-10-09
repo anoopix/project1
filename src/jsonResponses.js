@@ -2,133 +2,151 @@
 const polls = {};
 
 const respondJSON = (request, response, status, object) => {
-  const headers = {
-    'Content-Type': 'application/json',
-  };
+    const headers = {
+        'Content-Type': 'application/json',
+    };
 
-  response.writeHead(status, headers);
-  response.write(JSON.stringify(object));
-  response.end();
+    response.writeHead(status, headers);
+    response.write(JSON.stringify(object));
+    response.end();
 };
 
 const respondJSONMeta = (request, response, status) => {
-  const headers = {
-    'Content-Type': 'application/json',
-  };
+    const headers = {
+        'Content-Type': 'application/json',
+    };
 
-  response.writeHead(status, headers);
-  response.end();
+    response.writeHead(status, headers);
+    response.end();
 };
 
 const getPolls = (request, response) => {
-  const responseJSON = {
-    polls,
-  };
+    const responseJSON = {
+        polls,
+    };
 
-  return respondJSON(request, response, 200, responseJSON);
+    return respondJSON(request, response, 200, responseJSON);
 };
 
 const getPollsMeta = (request, response) => respondJSONMeta(request, response, 200);
 
+const addVote = (request, response, body) => {
+    const responseJSON = {
+        message: 'A vote is required'
+    };
+
+    if (!body.questionIndex || !body.optionIndex) {
+        responseJSON.id = 'missingParams';
+        return respondJSON(request, response, 400, responseJSON);
+    }
+
+    let responseCode = 204;
+
+    polls[body.questionIndex].options[body.optionIndex].votes += 1;
+
+    return respondJSONMeta(request, response, responseCode);
+};
+
 const addPoll = (request, response, body) => {
-  const responseJSON = {
-    message: 'Name and age are both required',
-  };
+    const responseJSON = {
+        message: 'A question and options are both required',
+    };
 
-  const keys = Object.keys(body);
-  const values = Object.values(body);
+    const keys = Object.keys(body);
+    const values = Object.values(body);
 
-  // for (let i = 0; i < keys.length; i++) {
-  //     console.log(`${keys[i]}: ${values[i]}`);
-  // }
+    // for (let i = 0; i < keys.length; i++) {
+    //     console.log(`${keys[i]}: ${values[i]}`);
+    // }
 
-  // Check if question is valid
-  if (!body.question) {
-    responseJSON.id = 'missingParams';
-    return respondJSON(request, response, 400, responseJSON);
-  }
-
-  // Check if each of the options are valid
-  let allFilled = true;
-  for (let i = 0; i < values.length; i++) {
-    if (!values[i]) {
-      allFilled = false;
-      break;
+    // Check if question is valid
+    if (!body.question) {
+        responseJSON.id = 'missingParams';
+        return respondJSON(request, response, 400, responseJSON);
     }
-  }
 
-  if (allFilled === false) {
-    responseJSON.id = 'missingParams';
-    return respondJSON(request, response, 400, responseJSON);
-  }
-
-  let responseCode = 201;
-
-  const maxIndex = Object.keys(polls).length;
-  let currentIndex = 0;
-
-  let alreadyAdded = false;
-  if (maxIndex > 0) {
-    for (let i = 0; i < maxIndex; i++) {
-      currentIndex = i;
-      if (polls[i].question === body.question) {
-        alreadyAdded = true;
-        break;
-      }
+    // Check if each of the options are valid
+    let allFilled = true;
+    for (let i = 0; i < values.length; i++) {
+        if (!values[i]) {
+            allFilled = false;
+            break;
+        }
     }
-  }
 
-  if (alreadyAdded === true) {
-    responseCode = 204;
-  } else {
-    currentIndex = maxIndex;
-  }
+    if (allFilled === false) {
+        responseJSON.id = 'missingParams';
+        return respondJSON(request, response, 400, responseJSON);
+    }
 
-  polls[currentIndex] = {};
+    let responseCode = 201;
 
-  polls[currentIndex].question = body.question;
+    const maxIndex = Object.keys(polls).length;
+    let currentIndex = 0;
 
-  // Array being pushed as option:
-  // {
-  //    text: value,
-  //    votes: 0
-  // }
+    let alreadyAdded = false;
+    if (maxIndex > 0) {
+        for (let i = 0; i < maxIndex; i++) {
+            currentIndex = i;
+            if (polls[i].question === body.question) {
+                alreadyAdded = true;
+                break;
+            }
+        }
+    }
 
-  const fullOptsObj = {};
+    if (alreadyAdded === true) {
+        responseCode = 204;
+    } else {
+        currentIndex = maxIndex;
+    }
 
-  for (let i = 1; i < keys.length; i++) {
-    const optionObj = {};
-    optionObj.option = values[i];
-    optionObj.votes = 0;
+    polls[currentIndex] = {};
 
-    fullOptsObj[i - 1] = optionObj;
-  }
+    polls[currentIndex].question = body.question;
 
-  polls[currentIndex].options = fullOptsObj;
+    // Array being pushed as option:
+    // {
+    //    text: value,
+    //    votes: 0
+    // }
 
-  if (responseCode === 201) {
-    responseJSON.message = 'Created Successfully!';
-    return respondJSON(request, response, responseCode, responseJSON);
-  }
+    const fullOptsObj = {};
 
-  return respondJSONMeta(request, response, responseCode);
+    for (let i = 1; i < keys.length; i++) {
+        const optionObj = {};
+        optionObj.option = values[i];
+        optionObj.votes = 0;
+
+        fullOptsObj[i - 1] = optionObj;
+    }
+
+    polls[currentIndex].options = fullOptsObj;
+
+    if (responseCode === 201) {
+        responseJSON.message = 'Created Successfully!';
+        return respondJSON(request, response, responseCode, responseJSON);
+    }
+
+    return respondJSONMeta(request, response, responseCode);
 };
 
 const notFound = (request, response) => {
-  const responseJSON = {
-    message: 'The page you are looking for was not found!',
-    id: 'notFound',
-  };
+    const responseJSON = {
+        message: 'The page you are looking for was not found!',
+        id: 'notFound',
+    };
 
-  return respondJSON(request, response, 404, responseJSON);
+    return respondJSON(request, response, 404, responseJSON);
 };
 
 const notFoundMeta = (request, response) => respondJSONMeta(request, response, 404);
 
 module.exports = {
-  getPolls,
-  getPollsMeta,
-  notFound,
-  notFoundMeta,
-  addPoll,
+    getPolls,
+    getPollsMeta,
+    notFound,
+    notFoundMeta,
+    addPoll,
+    addVote,
 };
