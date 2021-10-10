@@ -5,6 +5,7 @@ const css = fs.readFileSync(`${__dirname}/../client/style.css`);
 const mainJS = fs.readFileSync(`${__dirname}/../client/main.js`);
 const createJS = fs.readFileSync(`${__dirname}/../client/create.js`);
 const voteJS = fs.readFileSync(`${__dirname}/../client/vote.js`);
+const chartJS = fs.readFileSync(`${__dirname}/../client/chart.js`);
 
 const getIndex = (request, response) => {
   response.writeHead(200, { 'Content-Type': 'text/html' });
@@ -36,10 +37,17 @@ const getVoteJS = (request, response) => {
   response.end();
 };
 
+const getChartJS = (request, response) => {
+  response.writeHead(200, { 'Content-Type': 'text/javascript' });
+  response.write(chartJS);
+  response.end();
+};
+
 module.exports = {
   getIndex,
   getCSS,
   getMainJS,
   getCreateJS,
   getVoteJS,
+  getChartJS,
 };

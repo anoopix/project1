@@ -1,4 +1,5 @@
-import { createBackButton, sendVote } from "./main.js";
+import { createBackButton, sendVote, requestNotFound } from "./main.js";
+import * as chart from "./chart.js";
 
 const userInput = document.querySelector('#userInput');
 
@@ -21,6 +22,8 @@ let submitDiv;
 let submitBtn;
 
 let polls;
+
+let alreadyVoted = [];
 
 // Opens the vote screen
 function open() {
@@ -65,9 +68,9 @@ function open() {
     defaultOpt.innerHTML = "Choose a poll...";
     selectList.appendChild(defaultOpt);
 
-    let defaultOpt2 = document.createElement("option");
-    defaultOpt2.innerHTML = "----------------";
-    selectList.appendChild(defaultOpt2);
+    let notFoundOpt = document.createElement("option");
+    notFoundOpt.innerHTML = "Poll not found...";
+    selectList.appendChild(notFoundOpt);
 
     // Options div
     optionsDiv = document.createElement("div");
@@ -111,7 +114,12 @@ function addOptions(pollIndex) {
 
         optButton.addEventListener('click', function() {
             selectedOption = optionKeys[i];
+            submitBtn.disabled = false;
         });
+
+        if (alreadyVoted[pollIndex] == true) {
+            optButton.disabled = true;
+        }
 
         optionButtons.push(optButton);
     }
@@ -128,9 +136,18 @@ function addOptions(pollIndex) {
     submitBtn.value = "Submit poll";
     submitDiv.appendChild(submitBtn);
 
+    submitBtn.disabled = true;
+
     submitBtn.addEventListener('click', sendVote);
+
     submitBtn.addEventListener('click', function() {
         submitBtn.disabled = true;
+        alreadyVoted[pollIndex] = true;
+
+        let optButtons = optionsDiv.getElementsByTagName("button");
+        for (let button of optButtons) {
+            button.disabled = true;
+        }
     });
 
     createBackButton();
@@ -185,6 +202,8 @@ function close() {
 
     userInput.removeChild(title);
     title = null;
+
+    chart.close();
 }
 
 function getSelectList() {
@@ -200,20 +219,29 @@ function setPolls(_polls) {
         option.value = keys[i];
         option.innerHTML = polls[i].question;
         selectList.appendChild(option);
+        alreadyVoted.push(false);
     }
 
     selectList.onchange = function() {
         if (selectList.selectedIndex < 2) {
             clearOptions();
+
+            if (selectList.selectedIndex == 1) {
+                requestNotFound();
+            }
+
             return;
         }
 
         selectedQuestion = selectList.options[selectList.selectedIndex].value;
 
+        selectedOption = null;
+
+        chart.open();
+        chart.refresh(polls[selectList.options[selectList.selectedIndex].value]);
+
         addOptions(selectList.options[selectList.selectedIndex].value);
     };
-
-    //console.log(selectList);
 }
 
 function clearOptions() {

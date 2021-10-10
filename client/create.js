@@ -310,6 +310,17 @@ function restartScreen() {
         return;
     }
 
+    // If any of the fields are empty, return
+    if (questionField.value == "") {
+        return;
+    }
+
+    for (let field of optionFields) {
+        if (field.value == "") {
+            return;
+        }
+    }
+
     // Resets number of options to 2
     while (optionFields.length > 2) {
         removeOption();

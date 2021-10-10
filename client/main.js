@@ -1,5 +1,6 @@
 import * as create from "./create.js";
 import * as vote from "./vote.js";
+import * as chart from "./chart.js";
 
 const userInput = document.querySelector('#userInput');
 
@@ -14,22 +15,22 @@ const handleResponse = (xhr) => {
 
     switch (xhr.status) {
         case 200:
-            content.innerHTML = '<b>Success!</b>';
+            // content.innerHTML = '<b>Success!</b>';
             break;
         case 201:
-            content.innerHTML = '<b>Created!</b>';
+            // content.innerHTML = '<b>Created!</b>';
             break;
         case 204:
-            content.innerHTML = '<b>Updated (No Content)!</b>';
+            // content.innerHTML = '<b>Updated (No Content)!</b>';
             break;
         case 400:
-            content.innerHTML = '<b>Bad Request :(</b>';
+            // content.innerHTML = '<b>Bad Request :(</b>';
             break;
         case 404:
-            content.innerHTML = '<b>Resource Not Found :(</b>';
+            // content.innerHTML = '<b>Resource Not Found :(</b>';
             break;
         default:
-            content.innerHTML = '<p>Error code not implemented by client :(</p>';
+            // content.innerHTML = '<p>Error code not implemented by client :(</p>';
             break;
     }
 
@@ -38,17 +39,34 @@ const handleResponse = (xhr) => {
         //console.dir(obj);
 
         if (obj.polls) {
-            const pollsString = JSON.stringify(obj.polls);
-
-            content.innerHTML += `<p>${pollsString}</p>`;
+            // const pollsString = JSON.stringify(obj.polls);
+            // content.innerHTML += `<p>${pollsString}</p>`;
 
             if (vote.getSelectList() != null) {
                 vote.setPolls(obj.polls);
             }
         } else if (obj.message) {
-            content.innerHTML += `<p>Message: ${obj.message}</p>`;
+            // content.innerHTML += `<p>Message: ${obj.message}</p>`;
         }
     }
+};
+
+const requestNotFound = () => {
+    //const url = userForm.querySelector('#urlField').value;
+    //const method = userForm.querySelector('#methodSelect').value;
+
+    const xhr = new XMLHttpRequest();
+    // xhr.open(method, url);
+    xhr.open('get', '/notFound');
+
+    xhr.setRequestHeader('Accept', 'application/json');
+
+    xhr.onload = () => handleResponse(xhr);
+
+    xhr.send();
+
+    //e.preventDefault();
+    return false;
 };
 
 const requestUpdate = () => {
@@ -112,8 +130,6 @@ const sendVote = (e) => {
     xhr.onload = () => handleResponse(xhr);
 
     let gotVote = vote.getVote();
-
-    console.log(gotVote);
 
     const formData = `questionIndex=${gotVote[0]}&optionIndex=${gotVote[1]}`;
 
@@ -296,4 +312,4 @@ const init = () => {
 
 window.onload = init;
 
-export { createBackButton, sendVote };
+export { createBackButton, sendVote, requestNotFound };
