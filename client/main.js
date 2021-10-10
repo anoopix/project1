@@ -312,4 +312,4 @@ const init = () => {
 
 window.onload = init;
 
-export { createBackButton, sendVote, requestNotFound };
+export { createBackButton, sendVote, requestNotFound, requestUpdate };

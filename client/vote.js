@@ -1,4 +1,4 @@
-import { createBackButton, sendVote, requestNotFound } from "./main.js";
+import { createBackButton, sendVote, requestNotFound, requestUpdate } from "./main.js";
 import * as chart from "./chart.js";
 
 const userInput = document.querySelector('#userInput');
@@ -76,6 +76,13 @@ function open() {
     optionsDiv = document.createElement("div");
     optionsDiv.id = "optionsDiv";
     userInput.appendChild(optionsDiv);
+
+    requestUpdate();
+
+    setTimeout(function() {
+        fillSelect();
+    }, 100);
+
 }
 
 // Add options
@@ -148,6 +155,13 @@ function addOptions(pollIndex) {
         for (let button of optButtons) {
             button.disabled = true;
         }
+
+        requestUpdate();
+
+        setTimeout(function() {
+            chart.open();
+            chart.refresh(polls[pollIndex]);
+        }, 100);
     });
 
     createBackButton();
@@ -212,6 +226,9 @@ function getSelectList() {
 
 function setPolls(_polls) {
     polls = Object.values(_polls);
+}
+
+function fillSelect() {
     let keys = Object.keys(polls);
 
     for (let i = 0; i < polls.length; i++) {
