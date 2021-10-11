@@ -1,18 +1,59 @@
 const content = document.querySelector("#content");
 
+let buttonsDiv = null;
+let buttonsLabel = null;
+let pieBtn = null;
+let columnBtn = null;
+
 let chartDiv = null;
 
 let chart = null;
 let title = null;
+
+let categoryAxis = null;
+let valueAxis = null;
 let series = null;
+let columnTemplate = null;
+
+let mode = 0;
+
+let poll = null;
 
 function open() {
-    if (chartDiv != null ||
+    if (buttonsDiv != null ||
+        buttonsLabel != null ||
+        pieBtn != null ||
+        columnBtn != null ||
+        chartDiv != null ||
         chart != null ||
         title != null ||
         series != null) {
         close();
     }
+
+    // Buttons div
+    buttonsDiv = document.createElement("div");
+    buttonsDiv.id = "chartButtonsDiv";
+    content.appendChild(buttonsDiv);
+
+    // Buttons label
+    buttonsLabel = document.createElement("label");
+    buttonsLabel.innerHTML = "Set the chart type: ";
+    buttonsDiv.appendChild(buttonsLabel);
+
+    buttonsDiv.appendChild(document.createElement("br"));
+
+    // Pie button
+    pieBtn = document.createElement("button");
+    pieBtn.innerHTML = "Pie Chart";
+    pieBtn.id = "pieBtn";
+    buttonsDiv.appendChild(pieBtn);
+
+    // Column button
+    columnBtn = document.createElement("button");
+    columnBtn.innerHTML = "Column Chart";
+    columnBtn.id = "columnBtn";
+    buttonsDiv.appendChild(columnBtn);
 
     chartDiv = document.createElement("div");
     chartDiv.id = "chartDiv";
@@ -23,19 +64,65 @@ function open() {
     // Themes end
 
     // Create chart instance
-    chart = am4core.create(chartDiv, am4charts.PieChart);
+    switch (mode) {
+        case 0:
+            chart = am4core.create(chartDiv, am4charts.PieChart);
+            break;
+        case 1:
+            chart = am4core.create(chartDiv, am4charts.XYChart);
+            break;
+    }
+
 
     // Legend
     chart.legend = new am4charts.Legend();
+
+    buttonFunc();
+}
+
+function buttonFunc() {
+    pieBtn.onclick = function() {
+        mode = 0;
+        open();
+        refresh(poll);
+    };
+
+    columnBtn.onclick = function() {
+        mode = 1;
+        open();
+        refresh(poll);
+    }
 }
 
 function close() {
-    if (chartDiv == null ||
+    if (buttonsDiv == null ||
+        buttonsLabel == null ||
+        pieBtn == null ||
+        columnBtn == null ||
+        chartDiv == null ||
         chart == null ||
         title == null ||
-        series == null) {
+        series == null ||
+        poll == null) {
         return;
     }
+
+    buttonsDiv.removeChild(columnBtn);
+    columnBtn = null;
+
+    buttonsDiv.removeChild(pieBtn);
+    pieBtn = null;
+
+    let brs = buttonsDiv.getElementsByTagName("br");
+    for (let br of brs) {
+        buttonsDiv.removeChild(br);
+    }
+
+    buttonsDiv.removeChild(buttonsLabel);
+    buttonsLabel = null;
+
+    content.removeChild(buttonsDiv);
+    buttonsDiv = null;
 
     content.removeChild(chartDiv);
     chartDiv = null;
@@ -44,13 +131,27 @@ function close() {
     chart = null;
 
     title = null;
+
+    if (categoryAxis != null) {
+        categoryAxis = null;
+    }
+
+    if (valueAxis != null) {
+        valueAxis = null;
+    }
+
+    if (columnTemplate != null) {
+        columnTemplate = null;
+    }
+
     series = null;
 }
 
-function refresh(poll) {
+function refresh(_poll) {
+    poll = _poll;
     setTitle(poll);
     data(poll);
-    setSeries();
+    setAxesSeries();
 }
 
 function setTitle(poll) {
@@ -68,19 +169,53 @@ function data(poll) {
     chart.data = options;
 }
 
-function setSeries() {
-    // Add and configure Series
-    series = chart.series.push(new am4charts.PieSeries());
-    series.dataFields.value = "votes";
-    series.dataFields.category = "option";
-    series.slices.template.stroke = am4core.color("#fff");
-    series.slices.template.strokeWidth = 2;
-    series.slices.template.strokeOpacity = 1;
+function setAxesSeries() {
+    if (mode == 1) {
+        // Category axis (x-axis)
+        categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+        categoryAxis.dataFields.category = "option";
+        categoryAxis.renderer.grid.template.location = 0;
+        categoryAxis.renderer.minGridDistance = 30;
 
-    // This creates initial animation
-    series.hiddenState.properties.opacity = 1;
-    series.hiddenState.properties.endAngle = -90;
-    series.hiddenState.properties.startAngle = -90;
+        categoryAxis.renderer.labels.template.adapter.add("dy", function(dy, target) {
+            if (target.dataItem && target.dataItem.index & 2 == 2) {
+                return dy + 25;
+            }
+            return dy;
+        });
+
+        // Value axis (y-axis)
+        valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+    }
+    // Add and configure Series
+    switch (mode) {
+        case 0:
+            series = chart.series.push(new am4charts.PieSeries());
+            series.dataFields.value = "votes";
+            series.dataFields.category = "option";
+            series.slices.template.stroke = am4core.color("#fff");
+            series.slices.template.strokeWidth = 2;
+            series.slices.template.strokeOpacity = 1;
+
+            // This creates initial animation
+            series.hiddenState.properties.opacity = 1;
+            series.hiddenState.properties.endAngle = -90;
+            series.hiddenState.properties.startAngle = -90;
+            break;
+        case 1:
+            series = chart.series.push(new am4charts.ColumnSeries());
+            series.dataFields.valueY = "votes";
+            series.dataFields.categoryX = "option";
+            series.name = "Votes";
+            series.columns.template.tooltipText = "{categoryX}: [bold]{valueY}[/]";
+            series.columns.template.fillOpacity = .8;
+
+            columnTemplate = series.columns.template;
+            columnTemplate.strokeWidth = 2;
+            columnTemplate.strokeOpacity = 1;
+            break;
+    }
+
 }
 
 function getChart() {

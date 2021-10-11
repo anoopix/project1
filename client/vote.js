@@ -77,7 +77,7 @@ function open() {
     optionsDiv.id = "optionsDiv";
     userInput.appendChild(optionsDiv);
 
-    requestUpdate();
+    requestUpdate('get');
 
     setTimeout(function() {
         fillSelect();
@@ -156,7 +156,7 @@ function addOptions(pollIndex) {
             button.disabled = true;
         }
 
-        requestUpdate();
+        requestUpdate('get');
 
         setTimeout(function() {
             chart.open();
@@ -230,7 +230,7 @@ function fillSelect() {
             clearOptions();
 
             if (selectList.selectedIndex == 1) {
-                requestNotFound();
+                requestNotFound('get');
             }
 
             chart.close();

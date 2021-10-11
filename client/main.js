@@ -55,13 +55,13 @@ const handleResponse = (xhr) => {
     }
 };
 
-const requestNotFound = () => {
+const requestNotFound = (method) => {
     //const url = userForm.querySelector('#urlField').value;
     //const method = userForm.querySelector('#methodSelect').value;
 
     const xhr = new XMLHttpRequest();
     // xhr.open(method, url);
-    xhr.open('get', '/notFound');
+    xhr.open(method, '/notFound');
 
     xhr.setRequestHeader('Accept', 'application/json');
 
@@ -73,13 +73,13 @@ const requestNotFound = () => {
     return false;
 };
 
-const requestUpdate = () => {
+const requestUpdate = (method) => {
     //const url = userForm.querySelector('#urlField').value;
     //const method = userForm.querySelector('#methodSelect').value;
 
     const xhr = new XMLHttpRequest();
     // xhr.open(method, url);
-    xhr.open('get', '/getPolls');
+    xhr.open(method, '/getPolls');
 
     xhr.setRequestHeader('Accept', 'application/json');
 

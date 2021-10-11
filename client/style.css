@@ -92,5 +92,19 @@ body {
 
 #chartDiv {
     width: 100%;
-    height: 100%;
+    height: 90%;
 }
+
+#chartButtonsDiv {
+    background-color: lightblue;
+    margin: auto;
+    width: 300px;
+    height: 10%;
+    /* text-align: center; */
+}
+
+#pieBtn {}
+
+#columnBtn {}
+
+#headBtn {}

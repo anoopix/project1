@@ -48,7 +48,7 @@ const urlStruct = {
     },
     HEAD: {
         '/getPolls': jsonHandler.getPollsMeta,
-        notFound: jsonHandler.notFoundMeta,
+        '/notFound': jsonHandler.notFoundMeta,
     },
 };
 
@@ -56,7 +56,7 @@ const onRequest = (request, response) => {
     const parsedUrl = url.parse(request.url);
 
     console.dir(parsedUrl.pathname);
-    // console.dir(request.method);
+    console.dir(request.method);
 
     if (request.method === 'POST') {
         handlePost(request, response, parsedUrl);

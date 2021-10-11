@@ -69,11 +69,31 @@ function open() {
     optionsDiv.id = "optionsDiv";
     userInput.appendChild(optionsDiv);
 
-    requestUpdate();
+    requestUpdate('get');
 
     setTimeout(function() {
         fillSelect();
     }, 100);
+}
+
+function createHeadBtn() {
+    if (headBtn != null) {
+        return;
+    }
+
+    // Head button
+    headBtn = document.createElement("button");
+    headBtn.id = "headBtn";
+    headBtn.innerHTML = "Head Response";
+    optionsDiv.appendChild(headBtn);
+
+    headBtn.onclick = function() {
+        if (selectList.selectedIndex == 1) {
+            requestNotFound('head');
+        } else {
+            requestUpdate('head');
+        }
+    };
 }
 
 // Closes the vote screen
@@ -130,16 +150,21 @@ function fillSelect() {
 
     selectList.onchange = function() {
         if (selectList.selectedIndex < 2) {
-            clearOptions();
+            if (selectList.selectedIndex == 0) {
+                clearOptions();
+            }
 
             if (selectList.selectedIndex == 1) {
-                requestNotFound();
+                createHeadBtn();
+                requestNotFound('get');
             }
 
             chart.close();
 
             return;
         }
+
+        createHeadBtn();
 
         chart.open();
         chart.refresh(polls[selectList.options[selectList.selectedIndex].value]);
