@@ -178,21 +178,7 @@ function close() {
         return;
     }
 
-    if (submitBtn != null) {
-        submitDiv.removeChild(submitBtn);
-        submitBtn = null;
-    }
-
-    if (submitDiv != null) {
-        userInput.removeChild(submitDiv);
-        submitDiv = null;
-    }
-
-    for (let i = 0; i < optionButtons.length; i++) {
-        optionsDiv.removeChild(optionButtons[i]);
-        optionButtons[i] = null;
-    }
-    optionButtons = [];
+    clearOptions();
 
     userInput.removeChild(optionsDiv);
     optionsDiv = null;
@@ -246,6 +232,8 @@ function fillSelect() {
             if (selectList.selectedIndex == 1) {
                 requestNotFound();
             }
+
+            chart.close();
 
             return;
         }

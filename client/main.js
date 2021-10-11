@@ -1,4 +1,5 @@
 import * as create from "./create.js";
+import * as view from "./view.js";
 import * as vote from "./vote.js";
 import * as chart from "./chart.js";
 
@@ -7,6 +8,7 @@ const userInput = document.querySelector('#userInput');
 let screen = 0;
 
 let createBtn;
+let viewBtn;
 let voteBtn;
 let backBtn;
 
@@ -44,6 +46,8 @@ const handleResponse = (xhr) => {
 
             if (vote.getSelectList() != null) {
                 vote.setPolls(obj.polls);
+            } else if (view.getSelectList() != null) {
+                view.setPolls(obj.polls);
             }
         } else if (obj.message) {
             // content.innerHTML += `<p>Message: ${obj.message}</p>`;
@@ -155,6 +159,12 @@ const openMainScreen = () => {
     createBtn.innerHTML = "Create a new poll";
     userInput.appendChild(createBtn);
 
+    // View button
+    viewBtn = document.createElement("button");
+    viewBtn.id = "viewBtn";
+    viewBtn.innerHTML = "View all current polls";
+    userInput.appendChild(viewBtn);
+
     // Vote button
     voteBtn = document.createElement("button");
     voteBtn.id = "voteBtn";
@@ -171,6 +181,10 @@ const closeMainScreen = () => {
         return;
     }
 
+    if (viewBtn == null) {
+        return;
+    }
+
     if (voteBtn == null) {
         return;
     }
@@ -178,6 +192,10 @@ const closeMainScreen = () => {
     // Create button
     userInput.removeChild(createBtn);
     createBtn = null;
+
+    // View button
+    userInput.removeChild(viewBtn);
+    viewBtn = null;
 
     // Vote button
     userInput.removeChild(voteBtn);
@@ -222,8 +240,11 @@ const openScreen = (scr) => {
             createBackButton();
             break;
         case 2:
+            view.open();
+            createBackButton();
+            break;
+        case 3:
             vote.open();
-            voteFunc();
             createBackButton();
             break;
     }
@@ -240,6 +261,10 @@ const closeScreen = (scr) => {
             create.close();
             break;
         case 2:
+            removeBackButton();
+            view.close();
+            break;
+        case 3:
             removeBackButton();
             vote.close();
             break;
@@ -259,6 +284,10 @@ const mainButtonFunc = () => {
         return;
     }
 
+    if (viewBtn == null) {
+        return;
+    }
+
     if (voteBtn == null) {
         return;
     }
@@ -266,8 +295,11 @@ const mainButtonFunc = () => {
     createBtn.onclick = function() {
         screenTransition(1);
     };
-    voteBtn.onclick = function() {
+    viewBtn.onclick = function() {
         screenTransition(2);
+    }
+    voteBtn.onclick = function() {
+        screenTransition(3);
     };
 };
 
@@ -291,10 +323,6 @@ const createFunc = () => {
     questionForm.addEventListener('submit', function() {
         create.restartScreen();
     });
-};
-
-const voteFunc = () => {
-    requestUpdate();
 };
 
 const init = () => {
