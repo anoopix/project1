@@ -20,6 +20,9 @@ const respondJSONMeta = (request, response, status) => {
   response.end();
 };
 
+// Called in both view and vote screen
+// when the list of existing polls needs to be added to
+// select bar
 const getPolls = (request, response) => {
   const responseJSON = {
     polls,
@@ -30,9 +33,14 @@ const getPolls = (request, response) => {
 
 const getPollsMeta = (request, response) => respondJSONMeta(request, response, 200);
 
+// Used in vote screen
+// Called after user sends a vote
+// Finds the specific question that user is voting in,
+// and the specific option that user chooses, and increments the
+// number of votes by 1.
 const addVote = (request, response, body) => {
   const responseJSON = {
-    message: 'A vote is required',
+    message: 'A vote is required.',
   };
 
   if (!body.questionIndex || !body.optionIndex) {
@@ -47,9 +55,11 @@ const addVote = (request, response, body) => {
   return respondJSONMeta(request, response, responseCode);
 };
 
+// Used in create screen
+// Called after user submits a new poll
 const addPoll = (request, response, body) => {
   const responseJSON = {
-    message: 'A question and options are both required',
+    message: 'A question and options are both required.',
   };
 
   const keys = Object.keys(body);
@@ -133,7 +143,7 @@ const addPoll = (request, response, body) => {
 
 const notFound = (request, response) => {
   const responseJSON = {
-    message: 'The page you are looking for was not found!',
+    message: 'The poll you are looking for was not found!',
     id: 'notFound',
   };
 

@@ -1,7 +1,12 @@
+import { selectedBtnColor } from "./main.js";
+
 const content = document.querySelector("#content");
 
 let buttonsDiv = null;
 let buttonsLabel = null;
+
+let btns = [];
+
 let pieBtn = null;
 let columnBtn = null;
 
@@ -19,6 +24,7 @@ let mode = 0;
 
 let poll = null;
 
+// Opens the chart
 function open() {
     if (buttonsDiv != null ||
         buttonsLabel != null ||
@@ -30,6 +36,8 @@ function open() {
         series != null) {
         close();
     }
+
+    content.innerHTML = "";
 
     // Buttons div
     buttonsDiv = document.createElement("div");
@@ -49,11 +57,15 @@ function open() {
     pieBtn.id = "pieBtn";
     buttonsDiv.appendChild(pieBtn);
 
+    btns.push(pieBtn);
+
     // Column button
     columnBtn = document.createElement("button");
     columnBtn.innerHTML = "Column Chart";
     columnBtn.id = "columnBtn";
     buttonsDiv.appendChild(columnBtn);
+
+    btns.push(columnBtn);
 
     chartDiv = document.createElement("div");
     chartDiv.id = "chartDiv";
@@ -78,22 +90,37 @@ function open() {
     chart.legend = new am4charts.Legend();
 
     buttonFunc();
+
+    switch (mode) {
+        case 0:
+            selectedBtnColor(pieBtn, btns, "white", "#11489F");
+            break;
+        case 1:
+            selectedBtnColor(columnBtn, btns, "white", "#11489F");
+            break;
+    }
 }
 
+// Functionality of pie and column buttons directly aboce the chart
 function buttonFunc() {
     pieBtn.onclick = function() {
         mode = 0;
         open();
         refresh(poll);
+        selectedBtnColor(pieBtn, btns, "white", "#11489F");
     };
 
     columnBtn.onclick = function() {
         mode = 1;
         open();
         refresh(poll);
+        selectedBtnColor(columnBtn, btns, "white", "#11489F");
     }
 }
 
+// Closes chart
+// Called when either view or vote screens are closed
+// ALso called when a poll is not being viewed/voted on
 function close() {
     if (buttonsDiv == null ||
         buttonsLabel == null ||
@@ -106,6 +133,8 @@ function close() {
         poll == null) {
         return;
     }
+
+    btns = [];
 
     buttonsDiv.removeChild(columnBtn);
     columnBtn = null;
@@ -147,6 +176,8 @@ function close() {
     series = null;
 }
 
+// Called to change data whenever chart is opened,
+// or when a vote is cast
 function refresh(_poll) {
     poll = _poll;
     setTitle(poll);
@@ -162,6 +193,7 @@ function setTitle(poll) {
     title.marginBottom = 30;
 }
 
+// Loading in data from the selected poll
 function data(poll) {
     let options = Object.values(poll.options);
 
@@ -169,6 +201,7 @@ function data(poll) {
     chart.data = options;
 }
 
+// Sets the series of the chart
 function setAxesSeries() {
     if (mode == 1) {
         // Category axis (x-axis)
@@ -188,6 +221,7 @@ function setAxesSeries() {
         valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
     }
     // Add and configure Series
+    // Dependant on whether pie chart or column chart is selected
     switch (mode) {
         case 0:
             series = chart.series.push(new am4charts.PieSeries());
@@ -208,10 +242,10 @@ function setAxesSeries() {
             series.dataFields.categoryX = "option";
             series.name = "Votes";
             series.columns.template.tooltipText = "{categoryX}: [bold]{valueY}[/]";
-            series.columns.template.fillOpacity = .8;
+            series.columns.template.fillOpacity = 1;
 
             columnTemplate = series.columns.template;
-            columnTemplate.strokeWidth = 2;
+            columnTemplate.strokeWidth = 3;
             columnTemplate.strokeOpacity = 1;
             break;
     }

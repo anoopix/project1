@@ -23,25 +23,6 @@ let removeBtn;
 let submitDiv;
 let submitBtn;
 
-//  <form id="nameForm" action="/addUser" method="post">
-//    <label for="name">Name: </label>
-//    <input id="nameField" type="text" name="name" />
-//    <label for="age">Age: </label>
-//    <input id="ageField" type="number" name="age" min="0" max="100" step="1" />
-//    <input type="submit" value="Add User" />
-//  </form>
-//  <form id="userForm" action="/getUsers" method="get">
-//    <select id='urlField'>
-//      <option value='/getUsers'>/getUsers</option>
-//      <option value='/notReal'>/notReal</option>
-//    </select>
-//    <select id="methodSelect">
-//      <option value="get">GET</option>
-//      <option value="head">HEAD</option>
-//    </select>
-//    <input type="submit" value="Get User" />
-//  </form>
-
 function open() {
     if (title != null ||
         instructions != null ||
@@ -220,7 +201,7 @@ function addBtns() {
     submitBtn = document.createElement("input");
     submitBtn.id = "submitBtn";
     submitBtn.type = "submit";
-    submitBtn.value = "Submit poll";
+    submitBtn.value = "Submit Vote";
     submitDiv.appendChild(submitBtn);
 }
 
@@ -334,4 +315,18 @@ function restartScreen() {
     }
 }
 
-export { open, close, getForm, restartScreen };
+function repos() {
+    if (title == null || instructions == null) {
+        return;
+    }
+
+    if (window.innerHeight > 950) {
+        instructions.style.display = "block";
+        title.style.display = "block";
+    } else {
+        instructions.style.display = "none";
+        title.style.display = "block";
+    }
+}
+
+export { open, close, getForm, restartScreen, repos };

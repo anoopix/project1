@@ -3,7 +3,9 @@ import * as view from "./view.js";
 import * as vote from "./vote.js";
 import * as chart from "./chart.js";
 
+const header = document.querySelector('#header');
 const userInput = document.querySelector('#userInput');
+const content = document.querySelector('#content');
 
 let screen = 0;
 
@@ -13,26 +15,16 @@ let voteBtn;
 let backBtn;
 
 const handleResponse = (xhr) => {
-    const content = document.querySelector('#content');
 
     switch (xhr.status) {
-        case 200:
-            // content.innerHTML = '<b>Success!</b>';
-            break;
         case 201:
-            // content.innerHTML = '<b>Created!</b>';
-            break;
-        case 204:
-            // content.innerHTML = '<b>Updated (No Content)!</b>';
+            content.innerHTML = '<br><b>The poll has been created!</b>';
             break;
         case 400:
-            // content.innerHTML = '<b>Bad Request :(</b>';
+            content.innerHTML = '<br><b>Invalid Entry!</b>';
             break;
         case 404:
-            // content.innerHTML = '<b>Resource Not Found :(</b>';
-            break;
-        default:
-            // content.innerHTML = '<p>Error code not implemented by client :(</p>';
+            content.innerHTML = '<br><b>The Poll is Not Found!</b>';
             break;
     }
 
@@ -43,14 +35,15 @@ const handleResponse = (xhr) => {
         if (obj.polls) {
             // const pollsString = JSON.stringify(obj.polls);
             // content.innerHTML += `<p>${pollsString}</p>`;
-
             if (vote.getSelectList() != null) {
                 vote.setPolls(obj.polls);
             } else if (view.getSelectList() != null) {
                 view.setPolls(obj.polls);
             }
         } else if (obj.message) {
-            // content.innerHTML += `<p>Message: ${obj.message}</p>`;
+            if (xhr.status == 400 || xhr.status == 404) {
+                content.innerHTML += `<p>${obj.message}</p>`;
+            }
         }
     }
 };
@@ -152,6 +145,8 @@ const openMainScreen = () => {
     if (voteBtn != null) {
         return;
     }
+
+    content.innerHTML = "";
 
     // Create button
     createBtn = document.createElement("button");
@@ -314,6 +309,8 @@ const backButtonFunc = () => {
     };
 };
 
+// Called directly after create screen is loaded
+// If the submit button is clicked, the sendPost function is triggered
 const createFunc = () => {
     let questionForm = create.getForm();
 
@@ -325,19 +322,69 @@ const createFunc = () => {
     });
 };
 
+// Position function called whenever screen changes
+function reposition() {
+    document.body.onresize = function() {
+        position();
+    };
+}
+
+// Changes size/pos of objects according to the window's size
+// Called in reposition
+function position() {
+    userInputRepos();
+    create.repos();
+    vote.repos();
+    view.repos();
+
+    if (window.innerHeight < 860) {
+        content.style.display = "none";
+    } else {
+        content.style.display = "block";
+    }
+}
+
+// Used in position and reposition functions
+// Changes height of userInput according to window height
+function userInputRepos() {
+    if (userInput == null) {
+        return;
+    }
+
+    // Size
+    let height = window.innerHeight - content.clientHeight - header.clientHeight;
+    userInput.style.height = height.toString() + "px";
+
+    // Pos
+    let top = header.clientHeight;
+    userInput.style.top = top.toString() + "px";
+}
+
+// Used in view and vote
+// Sets all of the buttons in a list to their default color
+// Changes the selected button to a specified color
+// Highlights the button's selection status
+function selectedBtnColor(button, buttonList, color, bgColor) {
+    for (let btn of buttonList) {
+        btn.style.color = "";
+        btn.style.backgroundColor = "";
+    }
+
+    button.style.color = color;
+    button.style.backgroundColor = bgColor;
+}
+
+// Initializing function
+// Called on load
 const init = () => {
-    // const userForm = document.querySelector('#userForm');
-    // const nameForm = document.querySelector('#nameForm');
-
-    // const getUsers = (e) => requestUpdate(e, userForm);
-    // const addUser = (e) => sendPost(e, nameForm);
-
-    // userForm.addEventListener('submit', getUsers);
-    // nameForm.addEventListener('submit', addUser);
 
     openMainScreen();
+    reposition();
+    position();
 };
 
 window.onload = init;
 
-export { createBackButton, sendVote, requestNotFound, requestUpdate };
+
+
+export { createBackButton, sendVote, requestNotFound, requestUpdate, selectedBtnColor };

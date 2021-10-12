@@ -1,4 +1,4 @@
-import { createBackButton, requestNotFound, requestUpdate } from "./main.js";
+import { requestNotFound, requestUpdate } from "./main.js";
 import * as chart from "./chart.js";
 
 const userInput = document.querySelector('#userInput');
@@ -138,6 +138,7 @@ function setPolls(_polls) {
     polls = Object.values(_polls);
 }
 
+// Filsl the select with options
 function fillSelect() {
     let keys = Object.keys(polls);
 
@@ -171,6 +172,9 @@ function fillSelect() {
     };
 }
 
+// Clears options
+// Called when a poll is not selected
+// Also when view screen is closed
 function clearOptions() {
     if (headBtn != null) {
         optionsDiv.removeChild(headBtn);
@@ -178,4 +182,21 @@ function clearOptions() {
     }
 }
 
-export { open, close, getSelectList, setPolls };
+// Changes screen according to screen size
+function repos() {
+    if (title == null || instructions == null) {
+        return;
+    }
+
+    console.log(window.innerHeight);
+
+    if (window.innerHeight > 950) {
+        instructions.style.display = "block";
+        title.style.display = "block";
+    } else {
+        instructions.style.display = "none";
+        title.style.display = "block";
+    }
+}
+
+export { open, close, getSelectList, setPolls, repos };

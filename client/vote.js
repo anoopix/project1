@@ -1,4 +1,4 @@
-import { createBackButton, sendVote, requestNotFound, requestUpdate } from "./main.js";
+import { createBackButton, sendVote, requestNotFound, requestUpdate, selectedBtnColor } from "./main.js";
 import * as chart from "./chart.js";
 
 const userInput = document.querySelector('#userInput');
@@ -122,6 +122,7 @@ function addOptions(pollIndex) {
         optButton.addEventListener('click', function() {
             selectedOption = optionKeys[i];
             submitBtn.disabled = false;
+            selectedBtnColor(optButton, optionButtons, "white", "#11489F");
         });
 
         if (alreadyVoted[pollIndex] == true) {
@@ -140,7 +141,7 @@ function addOptions(pollIndex) {
     submitBtn = document.createElement("input");
     submitBtn.id = "submitBtn";
     submitBtn.type = "submit";
-    submitBtn.value = "Submit poll";
+    submitBtn.value = "Submit Vote";
     submitDiv.appendChild(submitBtn);
 
     submitBtn.disabled = true;
@@ -214,6 +215,7 @@ function setPolls(_polls) {
     polls = Object.values(_polls);
 }
 
+// Fills select bar with options
 function fillSelect() {
     let keys = Object.keys(polls);
 
@@ -249,6 +251,9 @@ function fillSelect() {
     };
 }
 
+// Clears the options div
+// Called when poll is not selected
+// Also called when vote screen is closed
 function clearOptions() {
     if (optionButtons.length > 0) {
         for (let i = 0; i < optionButtons.length; i++) {
@@ -269,8 +274,25 @@ function clearOptions() {
     }
 }
 
+// Used in main.js's 'sendVote' function
+// Sends both selected question and option as json response
 function getVote() {
     return [selectedQuestion, selectedOption];
 }
 
-export { open, close, getSelectList, setPolls, getVote };
+// Changes screen according to screen size
+function repos() {
+    if (title == null || instructions == null) {
+        return;
+    }
+
+    if (window.innerHeight > 950) {
+        instructions.style.display = "block";
+        title.style.display = "block";
+    } else {
+        instructions.style.display = "none";
+        title.style.display = "block";
+    }
+}
+
+export { open, close, getSelectList, setPolls, getVote, repos };
