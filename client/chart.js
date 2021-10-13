@@ -202,6 +202,8 @@ function data(poll) {
 }
 
 // Sets the series of the chart
+// Most of the code below is borrowed from the amCharts4 examples of 
+// creating both a pie chart and a column chart
 function setAxesSeries() {
     if (mode == 1) {
         // Category axis (x-axis)

@@ -130,10 +130,18 @@ function close() {
     chart.close();
 }
 
+// Gets select list
+// Called in main.js's handleResponse method
+// Called when xhr sends obj.polls
+// Used to check if select list is open
 function getSelectList() {
     return selectList;
 }
 
+// Called in main.js's handleResponse method
+// Called when xhr sends obj.polls
+// Takes in obj.polls and sets it to 'polls' variable
+// ONLY called if select list is open (see function above)
 function setPolls(_polls) {
     polls = Object.values(_polls);
 }

@@ -279,6 +279,8 @@ function close() {
     title = null;
 }
 
+// Returns question form
+// Called in main screen in order to addEventListener to said form
 function getForm() {
     return questionForm;
 }
@@ -315,6 +317,8 @@ function restartScreen() {
     }
 }
 
+
+// Changes display of title and instructions depending on window height
 function repos() {
     if (title == null || instructions == null) {
         return;

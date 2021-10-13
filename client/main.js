@@ -14,6 +14,10 @@ let viewBtn;
 let voteBtn;
 let backBtn;
 
+// Handles response of xhr
+// Called by multiple functions below
+// that send user's actions to xhr
+// and wait for response
 const handleResponse = (xhr) => {
 
     switch (xhr.status) {
@@ -30,11 +34,8 @@ const handleResponse = (xhr) => {
 
     if (xhr.response && xhr.getResponseHeader('Content-Type') === 'application/json') {
         const obj = JSON.parse(xhr.response);
-        //console.dir(obj);
 
         if (obj.polls) {
-            // const pollsString = JSON.stringify(obj.polls);
-            // content.innerHTML += `<p>${pollsString}</p>`;
             if (vote.getSelectList() != null) {
                 vote.setPolls(obj.polls);
             } else if (view.getSelectList() != null) {
@@ -48,12 +49,12 @@ const handleResponse = (xhr) => {
     }
 };
 
+// Called when user does something that doesn't have
+// an actual response from xhr
+// Used for when 'notFound' is selected in vote and view screens
+// 'method' differs between get and head requests
 const requestNotFound = (method) => {
-    //const url = userForm.querySelector('#urlField').value;
-    //const method = userForm.querySelector('#methodSelect').value;
-
     const xhr = new XMLHttpRequest();
-    // xhr.open(method, url);
     xhr.open(method, '/notFound');
 
     xhr.setRequestHeader('Accept', 'application/json');
@@ -66,12 +67,10 @@ const requestNotFound = (method) => {
     return false;
 };
 
+// Called when use
 const requestUpdate = (method) => {
-    //const url = userForm.querySelector('#urlField').value;
-    //const method = userForm.querySelector('#methodSelect').value;
 
     const xhr = new XMLHttpRequest();
-    // xhr.open(method, url);
     xhr.open(method, '/getPolls');
 
     xhr.setRequestHeader('Accept', 'application/json');
